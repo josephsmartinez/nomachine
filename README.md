@@ -1,4 +1,5 @@
 # NoMachine Install/Remove Role
+***Version 1.0.0***
 =========
 
 A role that will install NoMachine. 
@@ -9,7 +10,7 @@ NoMachine is a fast and high quality remote desktop.
 [NoMachine](https://www.nomachine.com/)
 
 ## Requirements
-------------
+--------------
 
 none
 
@@ -28,7 +29,7 @@ vars:
     version_suse: nomachine_6.4.6_1_x86_64.tar.gz
 ```
 ## Dependencies
-------------
+----------------
 
 none
 
