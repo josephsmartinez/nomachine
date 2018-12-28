@@ -1,0 +1,16 @@
+---
+#  Task to RedHat Systems
+#- include_vars: "{{ ansible_os_family }}.yml "
+- import_tasks: redhat.yml
+  when: ansible_os_family == 'RedHat'
+
+
+#  Task to Debian Systems
+#- include_vars: "{{ ansible_os_family }}.yml "
+- import_tasks: debian.yml
+  when: ansible_os_family == 'Debian'
+
+#  Task to SUSE Systems
+#- include_vars: "{{ ansible_os_family }}.yml "
+- import_tasks: suse.yml
+  when: ansible_os_family == 'Suse'

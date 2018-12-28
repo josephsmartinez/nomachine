@@ -1,0 +1,82 @@
+--- 
+- name: Download NoMachine
+  get_url:
+    url: "{{url_redhat}}/{{version_redhat}}"
+    dest: "{{install_path}}/{{version_redhat}}"
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Installing NoMachine on the target (RHEL) machines.
+  shell: "rpm -i {{install_path}}/{{version_redhat}}"
+  args:
+    warn: no
+  register: nomachine_installed
+  failed_when: nomachine_installed.rc < 0
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Results of installation
+  debug:
+   var: nomachine_installed.stder
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Configure firewall on port 4000
+  firewalld:
+    port: 4000/tcp 
+    permanent: yes
+    state: enabled
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Clean up post installation
+  file: 
+    path: "{{install_path}}/{{version_redhat}}"
+    state: absent
+  notify: 
+    - restart firewalld
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Start NXServer and enable
+  service: 
+    name: nxserver.service 
+    state: started
+    enabled: yes
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Uninstall NoMachine
+  shell: "rpm -e nomachine"
+  args:
+    warn: no
+  register: nomachine_installed
+  failed_when: nomachine_installed.rc < 0 
+  when: install == "false"
+  tags:
+    - uninstall
+
+- name: Clean up remaining directories
+  file: 
+    path: /usr/NX/
+    state: absent
+  when: install == "false"
+  tags:
+      - uninstall
+
+- name: Configure firewall remove port 4000
+  firewalld:
+    port: 4000/tcp 
+    permanent: yes
+    state: disabled
+  notify: 
+    - restart firewalld
+  when: install == "false"
+  tags:
+      - uninstall

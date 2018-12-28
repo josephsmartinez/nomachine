@@ -1,0 +1,10 @@
+---
+# handlers file for role
+
+# Redhat 
+- name: restart firewalld
+  service: name=firewalld state=restarted enabled=yes
+
+# Debain
+- name: reload firewall
+  ufw: state=reloaded

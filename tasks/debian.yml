@@ -1,0 +1,85 @@
+--- 
+- name: Download NoMachine
+  get_url:
+    url: "{{url_debian}}/{{version_debian}}"
+    dest: "{{install_path}}/{{version_debian}}"
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Installing NoMachine on the target (Debian) machines.
+  shell: "NX/scripts/setup/nxserver --uninstall"
+  args:
+    warn: no
+  register: nomachine_installed
+  failed_when: nomachine_installed.rc < 0
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Results of installation
+  debug:
+   var: nomachine_installed.stder
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Ensure ufw is enabled and started
+  ufw:
+      state: enabled
+  notify: reload firewall
+
+- name: Configure firewall on port 4000
+  ufw:
+    rule: allow
+    port: 4000
+    proto: tcp
+  notify: reload firewall
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Clean up post installation
+  file: 
+    path: "{{install_path}}/{{version_debian}}"
+    state: absent
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Start NXServer and enable
+  service: 
+    name: nxserver.service 
+    state: started
+    enabled: yes
+  when: install == "true"
+  tags: 
+    - install
+
+- name: Uninstall NoMachine
+  shell: "dpkg --remove nomachine"
+  args:
+    warn: no
+  register: nomachine_installed
+  failed_when: nomachine_installed.rc < 0 
+  when: install == "false"
+  tags:
+    - uninstall
+
+- name: Clean up remaining directories
+  file: 
+    path: /usr/NX/
+    state: absent
+  when: install == "false"
+  tags:
+      - uninstall
+
+- name: Configure firewall remove port 4000
+  ufw:
+    rule: deny
+    port: 4000
+    proto: tcp
+  notify: reload firewall
+  when: install == "false"
+  tags:
+      - uninstall

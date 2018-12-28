@@ -1,0 +1,10 @@
+---
+# default for installation is true
+install: "true"
+version_redhat: nomachine_6.4.6_1_x86_64.rpm
+version_debain: nomachine_6.4.6_1_amd64.deb
+version_suse: nomachine_6.4.6_1_x86_64.tar.gz
+install_path: /usr
+url_redhat: https://download.nomachine.com/download/6.4/Linux/
+url_debain: https://download.nomachine.com/download/6.4/Linux/
+url_suse: https://download.nomachine.com/download/6.4/Linux/
